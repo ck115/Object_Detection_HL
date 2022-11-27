@@ -1,11 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.IO;
-
-//might be a smart idea to seperate shapes and objects into seperate
-
 
 //Loading the latest image captured as an array of bytes.
 
@@ -22,12 +19,7 @@ public class CustomVisionAnalyser : MonoBehaviour {
     //used to create a singleton of the this class 
     public static CustomVisionAnalyser Instance;
 
-    //prediction Key
-    private string predictionKey = "b25b0df4235f41e5acee0f6cf216f17e";
-
-    //prediction endpoint 
-    private string perdictionEndpoint = "https://softwareproject.cognitiveservices.azure.com/";
-
+   
     //Byte array for the image for submission to the API ( hide in inspector prevents viewing in unity) 
     [HideInInspector] private byte[] byteImage;
 
@@ -42,12 +34,20 @@ public class CustomVisionAnalyser : MonoBehaviour {
         //calls to the debug functionalities of unity 
         Debug.Log("Anaylzing....");
 
+        //gets the current state, endpoint, and key from gamestate
+        string state = GameState.Instance.State;
+        string predictionEndpoint = GameState.Instance.getURL(state);
+        string predictionKey = GameState.Instance.getKey(state);
+
         //helper class to send post data to API 
         WWWForm webForm = new WWWForm();
 
         //UnityWEbREquest handles communication to web servers 
-        using(UnityWebRequest unityWebRequest = UnityWebRequest.Post(perdictionEndpoint, webForm))
+        using(UnityWebRequest unityWebRequest = UnityWebRequest.Post(predictionEndpoint, webForm))
         {
+
+            SceneOrganiser.Instance.PlaceAnalysisLabel();
+
             byteImage = GetImageAsByteArray(imagePath);
 
             unityWebRequest.SetRequestHeader("Content-type", "application-type/octect-stream");
@@ -78,7 +78,28 @@ public class CustomVisionAnalyser : MonoBehaviour {
             AnalysisRootObject analysisRootObject = new AnalysisRootObject();
             analysisRootObject = JsonConvert.DeserializeObject<AnalysisRootObject>(jsonResponse);
 
-            SceneOrganiser.Instance.FinalizeLabel(analysisRootObject);
+            string shape = SceneOrganiser.Instance.FinalizeLabel(analysisRootObject, state);
+
+            if (state == "shape")
+            {
+
+                if(shape != "none")
+                {
+                    GameState.Instance.State = "slot";
+
+                    GameState.Instance.setShape(shape);
+                }
+            }
+            else
+            {
+                if(shape != "none")
+                {
+                    GameState.Instance.addShape();
+
+                    GameState.Instance.State = "shape";
+                }
+            }
+
 
         }
     }
