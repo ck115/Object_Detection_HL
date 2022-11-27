@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -31,7 +31,7 @@ public class SceneOrganiser : MonoBehaviour {
     internal TextMesh lastLabelPlacedText;
 
     //Curent threshhold to displaying a label
-    internal float probabilityThreshold = 0.8f;
+    internal float probabilityThreshold = 0.3f;
 
     //The quad object hosting the imposed image captured 
     //It is our bounding box basically, it will appear around our objects based on what is returned from custom vision 
@@ -72,7 +72,9 @@ public class SceneOrganiser : MonoBehaviour {
         //create a game object to which the texture can be applied 
         quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
         quadRenderer = quad.GetComponent<Renderer>() as Renderer;
-        Material m = new Material(Shader.Find("Legacy Shaders/Transparent/Difuse"));
+
+
+        Material m = Resources.Load("Transp", typeof(Material)) as Material;
         quadRenderer.material = m;
 
         //tranparency of the quad , the color is rgb the transpaerncy 
@@ -97,7 +99,8 @@ public class SceneOrganiser : MonoBehaviour {
     //Adjusting the label depth by using a Raycast towards the Bounding Box, which should collide against the object in the real world.
     //Resetting the capture process to allow the user to capture another image.
 
-    public void FinalizeLabel(AnalysisRootObject analysisObject)
+    //Need to add param for the state that is currently being found (shape will recognize and return only what is found, slot makes cub)
+    public string FinalizeLabel(AnalysisRootObject analysisObject,string state)
     {
         if (analysisObject != null)
         {
@@ -121,16 +124,15 @@ public class SceneOrganiser : MonoBehaviour {
                 lastLabelPlaced.transform.parent = quad.transform;
 
                 //this is calculating the box that will be placed on the label so this will need to be changed a bit
-                //
                 lastLabelPlaced.transform.localPosition = CalculateBoundingBoxPosition(quadBounds, bestPrediction.boundingBox);
 
-
+                lastLabelPlacedText.text = bestPrediction.tagName;
 
                 // Cast a ray from the user's head to the currently placed label, it should hit the object detected by the Service.
                 // At that point it will reposition the label where the ray HL sensor collides with the object,
                 // (using the HL spatial tracking)
                 //need to figure this out
-                
+
                 Debug.Log("Repositioning Label");
                 Vector3 headPosition = Camera.main.transform.position;
                 RaycastHit objHitInfo;
@@ -139,14 +141,33 @@ public class SceneOrganiser : MonoBehaviour {
                 {
                     lastLabelPlaced.position = objHitInfo.point;
                 }
+
+
+                //reset color of cursor 
+                cursor.GetComponent<Renderer>().material.color = Color.green;
+
+                //stop the anylisis process 
+                ImageCapture.Instance.ResetImageCapture();
+
+                return bestPrediction.tagName;
+
+
+            }
+            else
+            {
+                //reset color of cursor 
+                cursor.GetComponent<Renderer>().material.color = Color.green;
+
+                //stop the anylisis process 
+                ImageCapture.Instance.ResetImageCapture();
+
+                return "none";
             }
 
-            //reset color of cursor 
-            cursor.GetComponent<Renderer>().material.color = Color.green;
 
-            //stop the anylisis process 
-            ImageCapture.Instance.ResetImageCapture();
         }
+
+        return "none";
 
 
     }
