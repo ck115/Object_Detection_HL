@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
