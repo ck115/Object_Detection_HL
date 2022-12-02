@@ -1,2 +1,0 @@
-C:\Users\ColeK\CustomVision2017\App\CustomVision2017\CustomVision2017.csproj;x86
-C:\Users\ColeK\CustomVision2017\App\GeneratedProjects\UWP\Assembly-CSharp\Assembly-CSharp.csproj;x86
