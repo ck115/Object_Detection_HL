@@ -6,16 +6,14 @@
 # Write a line equal to 'keep-all' (without quotes) to keep files regardless their modification (preserved accross builds)
 # Default behavior is to never overwrite files
 CustomVision2017.sln: modified
-CustomVision2017\App.cs: 05192AB47102A41FC06ED71D249DA26A
-CustomVision2017\AssemblyConverterArgs.txt: 03A27E06049410ACD31225E6BB6267FE
-CustomVision2017\CustomVision2017.csproj: 40FE83740AA355478885B7BC7FBA442F
+CustomVision2017\App.cs: FC357704BA5DE3E9457E65F94048B8FF
+CustomVision2017\CustomVision2017.csproj: 9B530D6B08031A5712FF76F3D6BF6539
 CustomVision2017\CustomVision2017.csproj.user: modified
-CustomVision2017\Package.appxmanifest: BA971A53BD7489FCDF8841DE7D1950F8
-CustomVision2017\project.json: CC10A2BA10723B75F669B6E9E5EE19C9
+CustomVision2017\Package.appxmanifest: E6A0FA7082F597F5EA11BE6E95BC0B22
+CustomVision2017\project.json: 88AA7FF964823F6407718C34CA0DFE19
 CustomVision2017\Assets\SplashScreen.scale-200.png: A85C1D7624B6902CF8CEBD6F0200A826
 CustomVision2017\Assets\Square150x150Logo.scale-200.png: E02834B4A5DFB97FF8E212C1CACBB084
 CustomVision2017\Assets\Square44x44Logo.scale-200.png: 6C6EF27184ABE9D870A9D564953775DE
-CustomVision2017\Assets\Square44x44Logo.targetsize-24.png: 156637F7B5363E983E7A46D8E533A23D
 CustomVision2017\Assets\Square44x44Logo.targetsize-24_altform-unplated.png: 156637F7B5363E983E7A46D8E533A23D
 CustomVision2017\Assets\StoreLogo.png: 90BD194CA4A7CFFF3E8B8222229857FB
 CustomVision2017\Assets\Wide310x150Logo.scale-200.png: C96846A80DF667F87355569CD816192D
@@ -37,7 +35,3 @@ CustomVision2017\obj\x86\Debug\CustomVision2017.csproj.CopyComplete: D41D8CD98F0
 CustomVision2017\obj\x86\Release\CustomVision2017.csproj.CopyComplete: D41D8CD98F00B204E9800998ECF8427E
 CustomVision2017\Properties\Default.rd.xml: 72EB282657164E79A1C42F6240984826
 GeneratedProjects\UWP\Assembly-CSharp\project.json: 88AA7FF964823F6407718C34CA0DFE19
-GeneratedProjects\UWP\Unity.Analytics.DataPrivacy\project.json: 88AA7FF964823F6407718C34CA0DFE19
-GeneratedProjects\UWP\Unity.TextMeshPro\project.json: 88AA7FF964823F6407718C34CA0DFE19
-GeneratedProjects\UWP\Unity.XR.WindowsMR\project.json: 88AA7FF964823F6407718C34CA0DFE19
-GeneratedProjects\UWP\UnityEngine.Purchasing\project.json: 88AA7FF964823F6407718C34CA0DFE19

@@ -13,6 +13,7 @@ public class Shape
     public string name;
     public double timeCompleted; 
 
+    //basic constructor for the obj
     public Shape(string shapeName,double time)
     {
         name = shapeName;
@@ -26,30 +27,40 @@ public class GameState : MonoBehaviour {
     public static GameState Instance;
 
     //used to keep track of time
-    private Stopwatch stopwatch = new Stopwatch();
+    private Stopwatch stopwatch;
 
-    public string state = "shape";
+    //string that keeps track of the state the game is in
+    public string state;
 
+    //respective string for the endpoint and key for the slot model
     private string slotURL = "https://northcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/1bd693cc-7d07-4b9c-9e64-262f96e2c6d8/detect/iterations/Slots1/image";
-
     private string slotKey = "bf691dd332aa404c8c5d05a0523d8299";
 
-    //these are not right but not big deal yet
-    private string shapeURL = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/042f48c8-3d70-4771-a0c5-6403eb08c680/detect/iterations/Block-detection/image";
-
-    private string shapeKey = "0f949d22085b434baeff5f670f4247d0";
+    //rspective strings for the endpoint and key for the shape model
+    private string shapeURL = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/042f48c8-3d70-4771-a0c5-6403eb08c680/detect/iterations/block/image";
+    private string shapeKey = "ef9310649d5d4bc7941a40d42ff394b6";
 
     private Shape shape = null;
 
-    private int count = 0;
+    //keeps track of how many shapes have been completed
+    private int count;
 
-    List<Shape> completed = new List<Shape>();
+    List<Shape> completed;
     
 
     //Instantiates as a singleton 
     void Awake()
     {
-        Instance = this; 
+        //instantiates the singleton and other stuff
+        Instance = this;
+
+        stopwatch = new Stopwatch();
+
+        completed = new List<Shape>();
+
+        count = -1;
+
+        state = "shape";
 
     }
 
@@ -64,6 +75,7 @@ public class GameState : MonoBehaviour {
         {
             return shapeURL;
         }
+
     }
     
 
@@ -79,65 +91,98 @@ public class GameState : MonoBehaviour {
             return shapeKey;
         }
     }
-
+    
+    //called by custom vision analyzer if object is detected while in shape state
     public void setShape(string name)
     {
-        //need to implment timer here to start 
 
         shape = new Shape(name, 0);
         stopwatch.Start();
+
+        //out to alert system
+        Alert.Instance.changeContent("Shape Found", "The shape " + name + "was found, look for slot");
+
+        //out to step system
+        Step.Instance.changeContent("Slot", "Use \"click\" command to find slot");
+
+    }
+
+    public Shape getShape()
+    {
+        return shape;
     }
 
     public void addShape()
     {
+
+
         //ends stopwatch and gets the time
         stopwatch.Stop();
         TimeSpan timeState = stopwatch.Elapsed;
 
-        //adds time completed in seconds 
+        //adds time completed in seconds, then adds the shape to the end of the list 
         shape.timeCompleted = timeState.TotalSeconds;
         completed.Add(shape);
         count++;
 
-        //resets stuff
+        //creates an alert that notifies how long it took to complete the game 
+        Alert.Instance.changeContent(shape.name + " completed ", shape.name + " took " + shape.timeCompleted + " to finish");
+
+        //updates step for new in structions
+        Step.Instance.changeContent("Shape", "Use \"click\" command to find shape");
+
+        //resets stuff and will set state to shape
         shape = null;
         stopwatch.Reset();
-
-        
+        state = "shape";
     }
 
-    //will only be able used during the shape state
-    //can use get in the voice recognizer area
+    //will only be able used during the slot state
+    //will reset the state back to shape and remove the currently added shape
     public void resetShapeAndTimer()
     {
+        //gets name of current shape being searched for on slots
+        //resets timer and shape
+        //converts state to shape
+        string name = shape.name; 
         stopwatch.Stop();
         stopwatch.Reset();
         shape = null;
-        state = "slot";
-        //should call message system here 
+        state = "shape";
+
+        //reaches out to alert and step ui to display change
+        Alert.Instance.changeContent("Reset"  + name, name + " is no longer being searched for");
+        Step.Instance.changeContent("Shape", "Use \"click\" command to find slot");
+
     }
 
     //removes the last shape that was completed 
     public bool removeLast()
     {
-        if (count != 0)
+        //checks to see if there is any shapes completed to remove 
+        if (count > -1)
         {
-            Shape toRemove = completed[count];
-            UnityEngine.Debug.LogFormat(toRemove.name);
+            //will remove the shape from the list 
+            string toRemove = completed[count].name;
+            UnityEngine.Debug.LogFormat(toRemove);
             completed.RemoveAt(count);
             count--;
+
+            //calling out to the alert system 
+            toRemove = toRemove + " no longer completed";
+            Alert.Instance.changeContent(toRemove, "must locate and try again");
+
             return true;
-            //call message system with toRemove being removed and successul 
         }
         else
         {
+            Alert.Instance.changeContent("Error", "there are no shapes completed to remove");
             return false;
-            //call mesage system saying there is no items to remove
         }
   
     }
 
-    void completeGame()
+    public void completeGame()
     {
         StringBuilder sb = new StringBuilder();
         foreach(var i in completed)
@@ -146,7 +191,7 @@ public class GameState : MonoBehaviour {
             sb.Append(line);
         }
 
-        File.WriteAllText("", sb.ToString());
+        File.WriteAllText("C:/App/GamePerformance", sb.ToString());
     }
 
 }

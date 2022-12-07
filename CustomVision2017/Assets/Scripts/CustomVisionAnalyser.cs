@@ -70,11 +70,23 @@ public class CustomVisionAnalyser : MonoBehaviour {
             //Create a texture. this is will be replaced by incoming image 
             Texture2D txt = new Texture2D(1, 1);
             txt.LoadImage(byteImage);
-            SceneOrganiser.Instance.quadRenderer.material.SetTexture("_MainTex", txt);
+            if(GameState.Instance.state == "slot")
+            {
+                SceneOrganiser.Instance.quadRenderer.material.SetTexture("_MainTex", txt);
+            }
 
             //respon will be in Json formt, therfore it will have to be deserialized
             AnalysisRootObject analysisRootObject = new AnalysisRootObject();
             analysisRootObject = JsonConvert.DeserializeObject<AnalysisRootObject>(jsonResponse);
+
+            if(gstate == "shape")
+            {
+                Step.Instance.changeContent("Shape", "Analyzing picture taken, searching for shapes");
+            }
+            else
+            {
+                Step.Instance.changeContent("Slot", "Analyzing picture taken, searching for slots");
+            }
 
             string shape = SceneOrganiser.Instance.FinalizeLabel(analysisRootObject, gstate);
 
@@ -89,14 +101,16 @@ public class CustomVisionAnalyser : MonoBehaviour {
 
                     GameState.Instance.setShape(shape);
                 }
+                else
+                {
+                    Step.Instance.changeContent("Shape","No Object found, try to \"click\" again");
+                }
             }
             else
             {
-                if(shape != "none")
+                if(shape == "none")
                 {
-                    GameState.Instance.addShape();
-
-                    GameState.Instance.state = "shape";
+                    Step.Instance.changeContent("Slot ", "No Object found, try to \"click\" again");
                 }
             }
 

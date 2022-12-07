@@ -30,6 +30,8 @@ public class ImageCapture : MonoBehaviour
     //file of current analyzed photo 
     internal string filePath = string.Empty;
 
+    bool firstSlotPic = false;
+
     // Use this for initialization
     void Awake()
     {
@@ -85,7 +87,14 @@ public class ImageCapture : MonoBehaviour
     {
         // Create a label in world space using the ResultsLabel class 
         // Invisible at this point but correctly positioned where the image was taken
-        SceneOrganiser.Instance.PlaceAnalysisLabel();
+        if (GameState.Instance.state == "slot" && !(firstSlotPic))
+        {
+            SceneOrganiser.Instance.PlaceAnalysisLabel();
+        }
+        else if (GameState.Instance.state == "slot")
+        {
+            SceneOrganiser.Instance.moveLabel();
+        }
 
         // Set the camera resolution to be the highest possible
         Resolution cameraResolution = PhotoCapture.SupportedResolutions.OrderByDescending
